@@ -1,23 +1,45 @@
-var startDate = new Date("2/1/2016").getTime();
+var urlBase = "http://www.esvapi.org/v2/rest/passageQuery?key=IP&include-subheadings=false&include-verse-numbers=false&include-footnotes=false&include-headings=false&include-audio-link=false&passage=";
+var startDateString = "2/18/2016";
+var startDate = new Date(startDateString).getTime();
 var todaysDate = new Date().getTime();
 var dateDifference = (todaysDate > startDate) ? todaysDate - startDate : 0;
-var targetDay = Math.floor(dateDifference/(1000*60*60*24)+1);
+var targetDay = Math.floor(dateDifference / (1000 * 60 * 60 * 24));
+targetDay = (targetDay) ? targetDay : 1;
 var lists = [
-	[{'Matthew':28}, {'Mark':16}, {'Luke':24}, {'John':21}],
-	[{'Genesis':50}, {'Exodus':40}, {'Leviticus':27}, {'Numbers':36}, {'Deuteronomy':34}],
-	[{'Romans':16}, {'1 Corinthians':16}, {'2 Corinthians':13}, {'Galatians':6}, {'Ephesians':6}, {'Philippians':4}, {'Colossians':4}, {'Hebrews':13}],
-	[{'1 Thessalonians':5}, {'2 Thessalonians':3}, {'1 Timothy':6}, {'2 Timothy':4}, {'Titus':3}, {'Philemon':1}, {'James':5}, {'1 Peter':5}, {'2 Peter':3}, {'1 John':5}, {'2 John':1}, {'3 John':1}, {'Jude':1}, {'Revelation':22}],
-	[{'Job':42}, {'Ecclesiastes':12}, {'Song of Solomon':8}],
-	[{'Psalms':150}],
-	[{'Proverbs':31}],
-	[{'Joshua':24}, {'Judges':21}, {'Ruth':4}, {'1 Samuel':31}, {'2 Samuel':24}, {'1 Kings':22}, {'2 Kings':25}, {'1 Chronicles':29}, {'2 Chronicles':36}, {'Ezra':10}, {'Nehemiah':13}, {'Esther':10}],
-	[{'Isaiah':66}, {'Jeremiah':52}, {'Lamentations':5}, {'Ezekiel':48}, {'Daniel':12}, {'Hosea':14}, {'Joel':3}, {'Amos':9}, {'Obadiah':1}, {'Jonah':4}, {'Micah':7}, {'Nahum':3}, {'Habbakuk':3}, {'Zephaniah':3}, {'Haggai':2}, {'Zechariah':14}, {'Malachi':4}],
-	[{'Acts':28}]
-];
+		{total:89, list:[{book: 'Matthew', chapter: 28}, {book: 'Mark', chapter: 16}, {book: 'Luke', chapter: 24}, {book: 'John', chapter: 21 } ] },
+		{total:187, list:[{book: 'Genesis', chapter: 50}, {book: 'Exodus', chapter: 40}, {book: 'Leviticus', chapter: 27}, {book: 'Numbers', chapter: 36}, {book: 'Deuteronomy', chapter: 34 }] },
+		{total:78, list:[{book: 'Romans', chapter: 16}, {book: '1 Corinthians', chapter: 16}, {book: '2 Corinthians', chapter: 13}, {book: 'Galatians', chapter: 6}, {book: 'Ephesians', chapter: 6}, {book: 'Philippians', chapter: 4}, {book: 'Colossians', chapter: 4}, {book: 'Hebrews', chapter: 13 }] },
+		{total:65, list:[{book: '1 Thessalonians', chapter: 5}, {book: '2 Thessalonians', chapter: 3}, {book: '1 Timothy', chapter: 6}, {book: '2 Timothy', chapter: 4}, {book: 'Titus', chapter: 3}, {book: 'Philemon', chapter: 1}, {book: 'James', chapter: 5}, {book: '1 Peter', chapter: 5}, {book: '2 Peter', chapter: 3}, {book: '1 John', chapter: 5}, {book: '2 John', chapter: 1}, {book: '3 John', chapter: 1}, {book: 'Jude', chapter: 1}, {book: 'Revelation', chapter: 22 }] },
+		{total:62, list:[{book: 'Job', chapter: 42}, {book: 'Ecclesiastes', chapter: 12}, {book: 'Song of Solomon', chapter: 8 }] },
+		{total:150, list:[{book: 'Psalms', chapter: 150 }] },
+		{total:31, list:[{book: 'Proverbs', chapter: 31 }] },
+		{total:249, list:[{book: 'Joshua', chapter: 24}, {book: 'Judges', chapter: 21}, {book: 'Ruth', chapter: 4}, {book: '1 Samuel', chapter: 31}, {book: '2 Samuel', chapter: 24}, {book: '1 Kings', chapter: 22}, {book: '2 Kings', chapter: 25}, {book: '1 Chronicles', chapter: 29}, {book: '2 Chronicles', chapter: 36}, {book: 'Ezra', chapter: 10}, {book: 'Nehemiah', chapter: 13}, {book: 'Esther', chapter: 10 }] },
+		{total:250, list:[{book: 'Isaiah', chapter: 66}, {book: 'Jeremiah', chapter: 52}, {book: 'Lamentations', chapter: 5}, {book: 'Ezekiel', chapter: 48}, {book: 'Daniel', chapter: 12}, {book: 'Hosea', chapter: 14}, {book: 'Joel', chapter: 3}, {book: 'Amos', chapter: 9}, {book: 'Obadiah', chapter: 1}, {book: 'Jonah', chapter: 4}, {book: 'Micah', chapter: 7}, {book: 'Nahum', chapter: 3}, {book: 'Habbakuk', chapter: 3}, {book: 'Zephaniah', chapter: 3}, {book: 'Haggai', chapter: 2}, {book: 'Zechariah', chapter: 14}, {book: 'Malachi', chapter: 4 }] },
+		{total:28, list:[{book: 'Acts', chapter: 28 }]}
+	];
 
-lists.forEach(function(a){
-	console.log(a);
-	for(var book in a);
-});
+var query = [];
+for (var i = 0; i < lists.length; i++) {
+	var list = lists[i];
+	var search = (list.total > targetDay) ? targetDay : targetDay % list.total;
+	var sumChapter = 0;
+	for(var b = 0; b < list.list.length; b++) {
+		// console.log(b);
+		var books = list.list[b];
+		var chapterCount = books.chapter + sumChapter;
+		// $('pre').append(search + " | " + books.book + "\n");
+		if((chapterCount - search) > 0) {
+			var ref = books.book + "+" + (books.chapter - (chapterCount - search));
+			query.push(ref);
+			$('pre').append(search + " :: " + ref + "\n");
+			break;
+		} else {
+			sumChapter = chapterCount;
+		}
+	}
+}
+document.location = urlBase + query.join(',');
 
-var urlBase = "http://www.esvapi.org/v2/rest/passageQuery?key=IP&include-subheadings=false&include-verse-numbers=false&include-footnotes=false&include-headings=false&include-audio-link=false&passage=";
+
+
+
