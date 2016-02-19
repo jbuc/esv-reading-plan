@@ -3,8 +3,8 @@ var startDateString = "2/18/2016";
 var startDate = new Date(startDateString).getTime();
 var todaysDate = new Date().getTime();
 var dateDifference = (todaysDate > startDate) ? todaysDate - startDate : 0;
-var targetDay = Math.floor(dateDifference / (1000 * 60 * 60 * 24));
-targetDay = (targetDay) ? targetDay : 1;
+var targetDay = Math.floor(dateDifference / (1000 * 60 * 60 * 24) + 1);
+
 var lists = [
 		{total:89, list:[{book: 'Matthew', chapter: 28}, {book: 'Mark', chapter: 16}, {book: 'Luke', chapter: 24}, {book: 'John', chapter: 21 } ] },
 		{total:187, list:[{book: 'Genesis', chapter: 50}, {book: 'Exodus', chapter: 40}, {book: 'Leviticus', chapter: 27}, {book: 'Numbers', chapter: 36}, {book: 'Deuteronomy', chapter: 34 }] },
@@ -31,7 +31,6 @@ for (var i = 0; i < lists.length; i++) {
 		if((chapterCount - search) > 0) {
 			var ref = books.book + "+" + (books.chapter - (chapterCount - search));
 			query.push(ref);
-			$('pre').append(search + " :: " + ref + "\n");
 			break;
 		} else {
 			sumChapter = chapterCount;
@@ -39,7 +38,3 @@ for (var i = 0; i < lists.length; i++) {
 	}
 }
 document.location = urlBase + query.join(',');
-
-
-
-
